@@ -16,10 +16,30 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "🍏 macOS detected. Checking dependencies..."
     INSTALL_CMD="brew install"
     ZSH_PATH="/bin/zsh"
+
+    # Check if Homebrew is installed, install if missing
+    if ! command -v brew &> /dev/null; then
+        echo "🍺 Homebrew not found. Installing..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    else
+        echo "✅ Homebrew is already installed."
+    fi
+
+    # Install Nerd Fonts (Best for p10k)
+    echo "🔡 Installing Hack Nerd Font..."
+    brew tap homebrew/cask-fonts
+    brew install --cask font-hack-nerd-font
+
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     echo "🐧 Linux detected. Checking dependencies..."
     INSTALL_CMD="sudo apt install -y"
     ZSH_PATH="/usr/bin/zsh"
+
+    # Install Powerline & Nerd Fonts (Linux alternative)
+    echo "🔡 Installing Powerline & Nerd Fonts..."
+    sudo apt update
+    sudo apt install -y fonts-powerline fonts-hack-ttf
 else
     echo "❌ Unsupported OS: $OSTYPE"
     exit 1
@@ -41,12 +61,33 @@ else
     echo "✅ Git is already installed."
 fi
 
-# Ensure Python3 is installed
-if ! command -v python3 &> /dev/null; then
-    echo "⚠️ Python3 is not installed! Installing now..."
-    $INSTALL_CMD python3 python3-pip
+# Ensure GitHub CLI (`gh`) is installed
+if ! command -v gh &> /dev/null; then
+    echo "🔧 Installing GitHub CLI..."
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        brew install gh
+    else
+        sudo apt update && sudo apt install -y gh
+    fi
 else
-    echo "✅ Python3 is already installed."
+    echo "✅ GitHub CLI (gh) is already installed."
+fi
+
+# Configure Git User if not set
+GIT_NAME=$(git config --global user.name)
+GIT_EMAIL=$(git config --global user.email)
+
+if [[ -z "$GIT_NAME" || -z "$GIT_EMAIL" ]]; then
+    echo "🛠️ Configuring Git User..."
+    read -p "Enter your Git user name: " GIT_NAME
+    git config --global user.name "$GIT_NAME"
+
+    read -p "Enter your Git email: " GIT_EMAIL
+    git config --global user.email "$GIT_EMAIL"
+    
+    echo "✅ Git user configured: $GIT_NAME <$GIT_EMAIL>"
+else
+    echo "✅ Git user is already set: $GIT_NAME <$GIT_EMAIL>"
 fi
 
 # Ensure scripts in bin/ are executable
@@ -91,3 +132,5 @@ python3 -m pip install yt-dlp whisper
 touch "$HOME/.brightside_installed"
 
 echo "🎉 Setup complete! Restart your terminal or run 'exec zsh' to apply changes."
+
+echo "💡 **IMPORTANT:** To enable Powerlevel10k, open your terminal settings and set your font to 'Hack Nerd Font' or 'MesloLGS NF'."
