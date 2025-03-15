@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [[ $# -eq 0 || "$1" == "--help" ]]; then
+    echo "🎛️ Brightside CLI - Available Commands:"
+    echo "  brightside ytmp3 <url>      # Download YouTube as MP3"
+    echo "  brightside ytmp4 <url>      # Download YouTube as MP4"
+    echo "  brightside whisper-sub <file>  # Generate subtitles"
+    echo "  brightside setup           # Re-run setup"
+    echo "  brightside --help          # Show this help menu"
+    exit 0
+fi
+
+if [[ "$1" == "--version" ]]; then
+    echo "🔹 Brightside CLI v1.0.0"
+    exit 0
+fi
+
+case "$1" in
+    ytmp3) shift; python3 "$BRIGHTSIDE_ROOT/bin/ytmp3.py" "$@" ;;
+    ytmp4) shift; python3 "$BRIGHTSIDE_ROOT/bin/ytmp4.py" "$@" ;;
+    whisper-sub) shift; python3 "$BRIGHTSIDE_ROOT/bin/whisper-sub.py" "$@" ;;
+    setup) shift; bash "$BRIGHTSIDE_ROOT/bin/setup.sh" "$@" ;;
+    *)
+        echo "❌ Unknown command: $1"
+        echo "Type 'brightside --help' for a list of commands."
+        exit 1
+        ;;
+esac
+

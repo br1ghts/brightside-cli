@@ -88,3 +88,11 @@ print -P '%F{magenta}ðŸ‘¾ Welcome back, choom. Ready to hack the Matrix today? â
 
 export BRIGHTSIDE_ROOT="/Users/rick/sites/brightside-cli"
 export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
+export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
+export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
+export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
+export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
