@@ -14,6 +14,7 @@ fi
 # Theme: Powerlevel10k for a crisp, customizable prompt
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
+
 # Essential plugins
 plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
 

@@ -139,5 +139,7 @@ python3 -m pip install yt-dlp whisper
 # Mark installation as complete
 touch "$HOME/.brightside_installed"
 
+source ~/.zshrc
+
 echo "🎉 Setup complete! Restart your terminal or run 'exec zsh' to apply changes."
 echo "💡 **IMPORTANT:** To enable Powerlevel10k, set your font to 'Hack Nerd Font' or 'MesloLGS NF'."
