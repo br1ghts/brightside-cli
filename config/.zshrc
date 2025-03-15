@@ -3,17 +3,19 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Path to Oh My Zsh installation
-export ZSH="$HOME/.oh-my-zsh"
+# Ensure Oh My Zsh is installed before loading
+if [ -d "$HOME/.oh-my-zsh" ]; then
+    export ZSH="$HOME/.oh-my-zsh"
+    source "$ZSH/oh-my-zsh.sh"
+else
+    echo "⚠️ Oh My Zsh not found! Install it using: sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
+fi
 
 # Theme: Powerlevel10k for a crisp, customizable prompt
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Essential plugins
 plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
-
-# Load Oh-My-Zsh (Required BEFORE customizations)
-source $ZSH/oh-my-zsh.sh
 
 # History optimization
 setopt HIST_IGNORE_ALL_DUPS SHARE_HISTORY INC_APPEND_HISTORY
@@ -46,15 +48,9 @@ alias gco='git checkout'
 alias zshrc='vim ~/.zshrc'
 alias reload='source ~/.zshrc'
 
-#Pipeline Commands
+# Pipeline Commands
 alias pipeline='cd ~/sites/pipeline'
 alias pipeline_start='php artisan pipeline:start'
-# Better keybindings
-bindkey -e
-
-# Enhanced navigation
-setopt AUTO_CD
-setopt CORRECT
 
 # Advanced completion setup
 autoload -Uz compinit && compinit
@@ -68,33 +64,19 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
+# 🔥 Auto-detect the Brightside CLI directory based on OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export BRIGHTSIDE_ROOT="$HOME/Sites/brightside-cli"  # macOS
+else
+    export BRIGHTSIDE_ROOT="$HOME/brightside-cli"  # Linux (WSL, Ubuntu, etc.)
+fi
 
-# Auto-detect the Brightside CLI directory based on the symlink
-export BRIGHTSIDE_ROOT="$(dirname "$(realpath "${BASH_SOURCE[0]:-${(%):-%x}}")")"
-
-# Add bin directory to PATH so tools are globally accessible
+# Add Brightside CLI to PATH
 export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-
-# Optional: Set a variable for the config directory
 export BRIGHTSIDE_CONFIG="$BRIGHTSIDE_ROOT/config"
-export PATH="$HOME/brightside-cli/bin:$PATH"
 
 # Badass Cyberpunk Welcome Message
 print -P '%F{magenta}👾 Welcome back, choom. Ready to hack the Matrix today? ⚡️%f'
 
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# Load Powerlevel10k if configured
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-export BRIGHTSIDE_ROOT="/Users/rick/sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
