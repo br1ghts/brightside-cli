@@ -81,3 +81,7 @@ print -P '%F{magenta}ðŸ‘¾ Welcome back, choom. Ready to hack the Matrix today? â
 
 # Load Powerlevel10k if configured
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+export BRIGHTSIDE_ROOT="/home/dave/brightside-cli"
+export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+export BRIGHTSIDE_ROOT="/home/dave/brightside-cli"
+export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"

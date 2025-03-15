@@ -15,10 +15,10 @@ BRIGHTSIDE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "📂 Brightside CLI root detected at: $BRIGHTSIDE_ROOT"
 
 # Prevent duplicate setup runs
-if [ -f "$HOME/.brightside_installed" ]; then
-    echo "✅ Brightside CLI is already installed. Run 'brightside --help' to get started."
-    exit 0
-fi
+# if [ -f "$HOME/.brightside_installed" ]; then
+#     echo "✅ Brightside CLI is already installed. Run 'brightside --help' to get started."
+#     exit 0
+# fi
 
 # Detect OS (Linux, macOS)
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -133,8 +133,8 @@ fi
 
 # Install Python dependencies
 echo "🐍 Installing Python dependencies..."
-python3 -m pip install --upgrade pip
-python3 -m pip install yt-dlp whisper
+python3 -m pip3 install --upgrade pip
+python3 -m pip3 install yt-dlp whisper
 
 # Mark installation as complete
 touch "$HOME/.brightside_installed"
