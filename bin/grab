@@ -1,0 +1,37 @@
+#!/bin/bash
+
+URL="$1"
+
+if [[ -z "$URL" ]]; then
+    echo "❌ No URL provided. Usage: brightside grab <url>"
+    exit 1
+fi
+
+# Extract file extension
+EXT="${URL##*.}"
+FILENAME=$(basename "$URL")
+
+echo "🔍 Detecting file type..."
+
+# Check if it's a YouTube/TikTok link
+if echo "$URL" | grep -qE "youtube.com|youtu.be|tiktok.com"; then
+    echo "🎥 Detected Video Platform! Using yt-dlp..."
+    yt-dlp -P "$HOME/Downloads" "$URL"
+
+# Check if it's an image, pdf, or other known file type
+elif [[ "$EXT" =~ ^(jpg|jpeg|png|gif|mp3|mp4|zip|pdf|tar|gz|doc|xls)$ ]]; then
+    echo "📂 Detected File Download! Using wget..."
+    wget -c -P "$HOME/Downloads" "$URL"
+
+# Check if it's a webpage (not a file)
+elif curl -I "$URL" 2>/dev/null | grep -q "text/html"; then
+    echo "🌍 Detected Webpage! Saving for offline use..."
+    wget --mirror --convert-links --adjust-extension --page-requisites -P "$HOME/Downloads" "$URL"
+
+# Fallback: Just try to download it with curl
+else
+    echo "📡 Unknown type. Attempting to download..."
+    curl -o "$HOME/Downloads/$FILENAME" "$URL"
+fi
+
+echo "✅ Download complete! Saved to $HOME/Downloads/"
