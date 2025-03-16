@@ -1,0 +1,45 @@
+#!/bin/bash
+
+TODO_FILE="$HOME/.brightside_todo"
+
+# Ensure the to-do file exists
+touch "$TODO_FILE"
+
+case "$1" in
+  add)
+    echo "$2" >> "$TODO_FILE"
+    echo "✅ Added: $2"
+    ;;
+
+  list)
+    if [ ! -s "$TODO_FILE" ]; then
+      echo "📭 No tasks found!"
+    else
+      echo "📝 Your To-Do List:"
+      cat -n "$TODO_FILE"
+    fi
+    ;;
+
+  done)
+    if [[ -z "$2" ]]; then
+      echo "⚠️ Usage: brightside todo done <task number>"
+      exit 1
+    fi
+    sed -i '' "$2d" "$TODO_FILE"
+    echo "✔ Task $2 marked as done!"
+    ;;
+
+  clear)
+    > "$TODO_FILE"
+    echo "🧹 Cleared all tasks!"
+    ;;
+
+  *)
+    echo "🛠️ Usage: brightside todo <command> [args]"
+    echo "Commands:"
+    echo "  add <task>  → Add a new task"
+    echo "  list        → Show all tasks"
+    echo "  done <num>  → Mark a task as done"
+    echo "  clear       → Remove all tasks"
+    ;;
+esac
