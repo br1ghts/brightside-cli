@@ -7,7 +7,7 @@ cat << "EOF"
 ██████╔╝██████╔╝██║██║  ███╗███████║   ██║   ███████╗██║██║  ██║█████╗  
 ██╔══██╗██╔══██╗██║██║   ██║██╔══██║   ██║   ╚════██║██║██║  ██║██╔══╝  
 ██████╔╝██║  ██║██║╚██████╔╝██║  ██║   ██║   ███████║██║██████╔╝███████╗
-╚═════╝ ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝╚═════╝ ╚══════╝
+╚═════╝ ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚══════╝╚═╝╚═════╝ ╚══════╝
 EOF
 
 # Automatically detect the Brightside CLI root directory
@@ -26,7 +26,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     INSTALL_CMD="brew install"
     ZSH_PATH="/bin/zsh"
 
-    # Check if Homebrew is installed, install if missing
+    # Ensure Homebrew is installed
     if ! command -v brew &> /dev/null; then
         echo "🍺 Homebrew not found. Installing..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || exit 1
@@ -36,6 +36,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 
     # Ensure Homebrew is in PATH
+    if [[ ! -f "$HOME/.zshrc" ]]; then
+        touch "$HOME/.zshrc"
+    fi
+
     if ! grep -q '/opt/homebrew/bin' "$HOME/.zshrc"; then
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zshrc"
         eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -43,8 +47,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     # Install Nerd Fonts (Best for p10k)
     echo "🔡 Installing Hack Nerd Font..."
-    brew tap homebrew/cask-fonts
-    brew install --cask font-hack-nerd-font
+    brew install --cask font-hack-nerd-font || echo "⚠️ Nerd Font already installed."
 
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     echo "🐧 Linux detected. Checking dependencies..."
@@ -67,6 +70,16 @@ else
     echo "✅ Zsh is already installed."
 fi
 
+# Ensure Powerlevel10k is Installed
+P10K_PATH="$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
+if [[ ! -d "$P10K_PATH" ]]; then
+    echo "💎 Installing Powerlevel10k..."
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_PATH"
+    echo "✅ Powerlevel10k installed successfully!"
+else
+    echo "✅ Powerlevel10k is already installed."
+fi
+
 # Ensure Git is installed
 if ! command -v git &> /dev/null; then
     echo "⚠️ Git is not installed! Installing now..."
@@ -87,40 +100,80 @@ else
     echo "✅ GitHub CLI (gh) is already installed."
 fi
 
-# Set up pipx for Python dependencies
+# Ensure Python3 is installed
+if ! command -v python3 &> /dev/null; then
+    echo "🐍 Python3 not found! Installing..."
+    $INSTALL_CMD python3 || exit 1
+else
+    echo "✅ Python3 is already installed."
+fi
+
+# Ensure pip is installed
+if ! command -v pip &> /dev/null && ! command -v pip3 &> /dev/null; then
+    echo "⚠️ pip is missing! Installing..."
+    python3 -m ensurepip --default-pip || exit 1
+fi
+
+# Ensure pipx is installed
 echo "🐍 Installing Python dependencies with pipx..."
 if ! command -v pipx &> /dev/null; then
     echo "🔧 Installing pipx..."
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        brew install pipx
-    else
-        sudo apt install -y pipx || exit 1
-    fi
+    $INSTALL_CMD pipx || exit 1
     pipx ensurepath
 fi
 
-# Force reinstall Python tools to avoid conflicts
-pipx install --force yt-dlp whisper feedparser || exit 1
+# Ensure Python Virtual Environment is Set Up (Fixes PEP 668)
+PYTHON_VENV_PATH="$HOME/.brightside_venv"
 
-# Add bin directory to PATH (Only if not already in ~/.zshrc)
-if ! grep -q "$BRIGHTSIDE_ROOT/bin" "$HOME/.zshrc"; then
-    echo "🔗 Adding Brightside CLI to PATH..."
-    echo "export BRIGHTSIDE_ROOT=\"$BRIGHTSIDE_ROOT\"" >> "$HOME/.zshrc"
-    echo 'export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"' >> "$HOME/.zshrc"
-    echo 'export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"' >> "$HOME/.bashrc"
-    echo "✅ PATH updated!"
+# Check if Virtual Environment Exists, If Not, Create It
+if [[ ! -d "$PYTHON_VENV_PATH" ]]; then
+    echo "🛠️ Creating Python virtual environment at $PYTHON_VENV_PATH"
+    python3 -m venv "$PYTHON_VENV_PATH" || exit 1
+fi
+
+# Activate the Virtual Environment
+echo "🔗 Activating Python virtual environment..."
+source "$PYTHON_VENV_PATH/bin/activate"
+
+# Upgrade pip inside the Virtual Environment
+echo "⬆️ Upgrading pip inside the virtual environment..."
+"$PYTHON_VENV_PATH/bin/python3" -m pip install --upgrade pip || exit 1
+
+# Install Python libraries inside the Virtual Environment
+echo "📦 Installing Python dependencies inside the virtual environment..."
+"$PYTHON_VENV_PATH/bin/python3" -m pip install --upgrade feedparser || exit 1
+
+# Ensure Brightside's Custom .zshrc is Used
+BRIGHTSIDE_ZSHRC="$BRIGHTSIDE_ROOT/config/.zshrc"
+DEFAULT_ZSHRC="$HOME/.zshrc"
+
+# Ensure Powerlevel10k is set as the theme in .zshrc
+if ! grep -q "ZSH_THEME=\"powerlevel10k/powerlevel10k\"" "$HOME/.zshrc"; then
+    echo "⚡ Setting Powerlevel10k as default Zsh theme..."
+    echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$HOME/.zshrc"
+    echo "✅ Powerlevel10k theme set!"
+fi
+
+if [[ -f "$BRIGHTSIDE_ZSHRC" ]]; then
+    echo "🔗 Linking Brightside custom .zshrc to $HOME/.zshrc"
+
+    # Backup existing .zshrc if it exists
+    if [[ -f "$DEFAULT_ZSHRC" && ! -L "$DEFAULT_ZSHRC" ]]; then
+        echo "📂 Backing up existing .zshrc to $HOME/.zshrc.bak"
+        mv "$DEFAULT_ZSHRC" "$HOME/.zshrc.bak"
+    fi
+
+    # Symlink Brightside's .zshrc
+    ln -sf "$BRIGHTSIDE_ZSHRC" "$DEFAULT_ZSHRC"
+    echo "✅ Brightside custom .zshrc is now linked!"
 else
-    echo "✅ Brightside CLI is already in PATH."
+    echo "⚠️ Brightside .zshrc not found in $BRIGHTSIDE_ZSHRC, using default."
 fi
 
 # Set Zsh as default shell (only if not already set)
 if [[ "$SHELL" != "$ZSH_PATH" ]]; then
     echo "🛠️ Changing default shell to Zsh..."
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        chsh -s $(which zsh)
-    else
-        sudo chsh -s $(which zsh) $USER
-    fi
+    chsh -s /bin/zsh
 else
     echo "✅ Zsh is already the default shell."
 fi
@@ -129,6 +182,4 @@ fi
 touch "$HOME/.brightside_installed"
 
 echo "🎉 Setup complete! Restart your terminal or run 'exec zsh' to apply changes."
-echo "💡 **IMPORTANT:** To enable Powerlevel10k, open your terminal settings and set your font to 'Hack Nerd Font' or 'MesloLGS NF'."
-
-exec zsh  # Auto-start Zsh after setup
+exec zsh
