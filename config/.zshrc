@@ -1,4 +1,5 @@
 # ⚡️ Powerlevel10k Instant Prompt for blazing speed
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -79,25 +80,53 @@ export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
 export BRIGHTSIDE_CONFIG="$BRIGHTSIDE_ROOT/config"
 export PATH="$HOME/brightside-cli/bin:$PATH"
 
-# Badass Cyberpunk Welcome Message
-print -P '%F{magenta}👾 Welcome back, choom. Ready to hack the Matrix today? ⚡️%f'
-
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-export BRIGHTSIDE_ROOT="/Users/rick/sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
-export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
-export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+
+function badass_welcome() {
+    # Only run if this is an interactive shell (so it doesn’t run in scripts)
+    [[ $- == *i* ]] || return
+
+    emulate -L zsh  # Ensure compatibility mode
+
+    # Add a slight delay for dramatic effect
+    sleep 0.1  
+
+    # Cyberpunk Glitch Effect - Random Symbols Scroll
+    local symbols=("█▒░" "▓█░" "░▒▓" "███" "▓▓▒" "▒░▓")
+    for i in {1..10}; do
+        print -Pn "%F{green}${symbols[RANDOM % ${#symbols[@]}]}%F{black} Initializing...\r"
+        sleep 0.1
+    done
+    print ""  # Newline after animation
+
+    # Boot Animation
+    local chars=("■" "■ ■" "■ ■ ■" "■ ■ ■ ■" "■ ■ ■ ■ ■")
+    for i in {1..5}; do
+        print -Pn "%F{red}${chars[i]} %F{black}Booting up...\r"
+        sleep 0.2
+    done
+    print ""  # Newline after animation
+
+    # Cyberpunk System Log
+    sleep 0.2
+    print -P "%F{cyan}[LOG] %F{green}Neural uplink established...%f"
+    sleep 0.2
+    print -P "%F{cyan}[LOG] %F{yellow}Decrypting access protocols...%f"
+    sleep 0.2
+    print -P "%F{cyan}[LOG] %F{magenta}Environment loaded successfully.%f"
+    sleep 0.2
+
+    # Final Cyberpunk Welcome Message
+    print -P '%F{red}💀 SYSTEM ONLINE...%f'
+    sleep 0.1
+    print -P '%F{blue}🕶️ Welcome back, MrBrightside. Let’s raise some hell.%f'
+}
+
+# Run this ONLY when starting a new terminal session or sourcing .zshrc
+badass_welcome
 
 # Created by `pipx` on 2025-03-16 17:33:34
 export PATH="$PATH:/Users/rick/.local/bin"
