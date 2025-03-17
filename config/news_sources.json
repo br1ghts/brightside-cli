@@ -1,0 +1,16 @@
+{
+    "tech": [
+      "https://www.theverge.com/rss/index.xml",
+      "https://www.wired.com/feed/rss",
+      "https://www.techradar.com/rss",
+      "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+    ],
+    "world": [
+      "http://feeds.bbci.co.uk/news/world/rss.xml",
+      "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "https://www.aljazeera.com/xml/rss/all.xml"
+    ],
+    "hacker": [
+      "https://news.ycombinator.com/rss"
+    ]
+  }

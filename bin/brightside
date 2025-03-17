@@ -20,6 +20,7 @@ case "$1" in
     ytmp4) shift; python3 "$BRIGHTSIDE_ROOT/bin/ytmp4.py" "$@" ;;
     whisper-sub) shift; python3 "$BRIGHTSIDE_ROOT/bin/whisper-sub.py" "$@" ;;
     todo) shift; bash "$BRIGHTSIDE_ROOT/bin/todo" "$@" ;;  # <== ✅ Added todo command
+    news) shift; python3 "$BRIGHTSIDE_ROOT/bin/news.py" "$@" ;;
     grab) shift; bash "$BRIGHTSIDE_ROOT/bin/grab" "$@" ;;  # New grab command
     setup) shift; bash "$BRIGHTSIDE_ROOT/bin/setup.sh" "$@" ;;
     *)

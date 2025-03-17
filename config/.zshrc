@@ -98,3 +98,6 @@ export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
 export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
 export BRIGHTSIDE_ROOT="/Users/rick/Sites/brightside-cli"
 export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+
+# Created by `pipx` on 2025-03-16 17:33:34
+export PATH="$PATH:/Users/rick/.local/bin"
