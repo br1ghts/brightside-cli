@@ -10,32 +10,36 @@ cat << "EOF"
 ╚═════╝ ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝╚═════╝ ╚══════╝
 EOF
 
-# Automatically detect the Brightside CLI root directory
+# Detect Brightside CLI root directory
 BRIGHTSIDE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "📂 Brightside CLI root detected at: $BRIGHTSIDE_ROOT"
 
-# Prevent duplicate setup runs
+# Prevent duplicate setup
 if [ -f "$HOME/.brightside_installed" ]; then
     echo "✅ Brightside CLI is already installed. Run 'brightside --help' to get started."
     exit 0
 fi
 
-# Detect OS (Linux, macOS)
+# Detect OS (Linux/macOS)
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "🍏 macOS detected. Checking dependencies..."
     INSTALL_CMD="brew install"
     ZSH_PATH="/bin/zsh"
 
-    # Check and install Homebrew
-    if ! command -v brew &> /dev/null; then
-        echo "🍺 Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # Install Homebrew if missing
+    if ! command -v brew &>/dev/null; then
+        echo "🍺 Homebrew not found. Installing..."
+        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    else
+        echo "✅ Homebrew is already installed."
+    fi
+
+    # Ensure Homebrew is in PATH
+    if ! grep -q 'brew shellenv' "$HOME/.zshrc"; then
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zshrc"
         eval "$(/opt/homebrew/bin/brew shellenv)"
     fi
-    
-    # Ensure Homebrew is in PATH
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zshrc"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
 
     # Install dependencies
     brew install git zsh pipx
@@ -89,16 +93,24 @@ fi
 
 pipx install yt-dlp whisper feedparser
 
-# Set Zsh as the default shell
-if [[ "$SHELL" != "$ZSH_PATH" ]]; then
-    echo "🛠️ Changing default shell to Zsh..."
-    chsh -s $(which zsh)
-fi
-
 # Link new .zshrc
 if [ -f "$BRIGHTSIDE_ROOT/config/.zshrc" ]; then
     echo "🔗 Linking new .zshrc file..."
     ln -sf "$BRIGHTSIDE_ROOT/config/.zshrc" "$HOME/.zshrc"
+fi
+
+# Ensure Brightside CLI is in PATH
+if ! grep -q "$BRIGHTSIDE_ROOT/bin" "$HOME/.zshrc"; then
+    echo "export BRIGHTSIDE_ROOT=\"$BRIGHTSIDE_ROOT\"" >> "$HOME/.zshrc"
+    echo "export PATH=\"$BRIGHTSIDE_ROOT/bin:\$PATH\"" >> "$HOME/.zshrc"
+    echo "✅ PATH updated!"
+fi
+
+# Set Zsh as the default shell (ONLY if it isn't already set)
+if [[ "$SHELL" != "$ZSH_PATH" ]]; then
+    echo "🛠️ Changing default shell to Zsh..."
+    chsh -s $(which zsh)
+    echo "⚡ Restart your terminal or run 'exec zsh' to apply changes."
 fi
 
 # Mark installation as complete
