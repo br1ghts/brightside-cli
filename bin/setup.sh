@@ -26,14 +26,31 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     INSTALL_CMD="brew install"
     ZSH_PATH="/bin/zsh"
 
-    # Install Homebrew if missing
-    if ! command -v brew &>/dev/null; then
-        echo "🍺 Homebrew not found. Installing..."
-        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+# Install Homebrew if missing
+if ! command -v brew &>/dev/null; then
+    echo "🍺 Homebrew not found. Installing..."
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Determine the correct Homebrew path
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        BREW_PATH="/opt/homebrew/bin/brew"
     else
-        echo "✅ Homebrew is already installed."
+        BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
     fi
+
+    # Ensure brew is in PATH
+    if [[ -f "$BREW_PATH" ]]; then
+        echo "✅ Homebrew installed at $BREW_PATH"
+        echo "eval \"\$($BREW_PATH shellenv)\"" >> "$HOME/.zshrc"
+        eval "$($BREW_PATH shellenv)"
+    else
+        echo "❌ Homebrew installation failed."
+        exit 1
+    fi
+else
+    echo "✅ Homebrew is already installed."
+    eval "$(brew shellenv)"
+fi
 
     # Ensure Homebrew is in PATH
     if ! grep -q 'brew shellenv' "$HOME/.zshrc"; then
