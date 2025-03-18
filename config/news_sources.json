@@ -1,16 +1,39 @@
 {
-    "tech": [
-      "https://www.theverge.com/rss/index.xml",
-      "https://www.wired.com/feed/rss",
-      "https://www.techradar.com/rss",
-      "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
-    ],
-    "world": [
-      "http://feeds.bbci.co.uk/news/world/rss.xml",
-      "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
-      "https://www.aljazeera.com/xml/rss/all.xml"
-    ],
-    "hacker": [
-      "https://news.ycombinator.com/rss"
-    ]
-  }
+  "tech": [
+    "https://www.theverge.com/rss/index.xml",
+    "https://www.wired.com/feed/rss",
+    "https://www.techradar.com/rss",
+    "https://hackaday.com/blog/feed/",
+    "https://www.darkreading.com/rss.xml"
+  ],
+  "world": [
+    "http://feeds.bbci.co.uk/news/world/rss.xml",
+    "https://www.reutersagency.com/feed/?best-regions=world&post_type=best",
+    "https://www.aljazeera.com/xml/rss/all.xml",
+    "https://foreignpolicy.com/feed/"
+  ],
+  "hacker": [
+    "https://news.ycombinator.com/rss",
+    "https://www.schneier.com/blog/atom.xml",
+    "https://www.bleepingcomputer.com/feed/",
+    "https://www.vice.com/en/rss/topic/motherboard"
+  ],
+  "finance": [
+    "https://www.bloomberg.com/technology/feed",
+    "https://feeds.feedburner.com/zerohedge/feed",
+    "https://www.coindesk.com/arc/outboundfeeds/rss/",
+    "https://wolfstreet.com/feed/"
+  ],
+  "philosophy_faith": [
+    "https://www.thegospelcoalition.org/feed/",
+    "https://fs.blog/feed/",
+    "https://aeon.co/feeds",
+    "https://waitbutwhy.com/feed"
+  ],
+  "fun_misc": [
+    "https://www.theonion.com/rss",
+    "https://www.thisiswhyimbroke.com/rss/",
+    "https://www.atlasobscura.com/feeds/latest",
+    "https://www.ign.com/rss.xml"
+  ]
+}

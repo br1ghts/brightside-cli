@@ -2,44 +2,65 @@
 
 TODO_FILE="$HOME/.brightside_todo"
 
+# Colors
+GREEN="\033[1;32m"
+YELLOW="\033[1;33m"
+RED="\033[1;31m"
+CYAN="\033[1;36m"
+BOLD="\033[1m"
+RESET="\033[0m"
+
 # Ensure the to-do file exists
 touch "$TODO_FILE"
 
 case "$1" in
   add)
-    echo "$2" >> "$TODO_FILE"
-    echo "✅ Added: $2"
+    if [[ -z "$2" ]]; then
+      echo -e "${RED}⚠️  Error: Task description cannot be empty.${RESET}"
+      exit 1
+    fi
+    echo "[ ] $2" >> "$TODO_FILE"
+    echo -e "${GREEN}✅ Added:${RESET} $2"
     ;;
 
   list)
     if [ ! -s "$TODO_FILE" ]; then
-      echo "📭 No tasks found!"
+      echo -e "${YELLOW}📭 No tasks found!${RESET}"
     else
-      echo "📝 Your To-Do List:"
-      cat -n "$TODO_FILE"
+      echo -e "${CYAN}📝 Your To-Do List:${RESET}"
+      echo "---------------------------------"
+      nl -w2 -s') ' "$TODO_FILE" | sed 's/\[x\]/✅/g' | sed 's/\[ \]/⬜/g'
+      echo "---------------------------------"
     fi
     ;;
 
   done)
-    if [[ -z "$2" ]]; then
-      echo "⚠️ Usage: brightside todo done <task number>"
+    if [[ -z "$2" ]] || ! [[ "$2" =~ ^[0-9]+$ ]]; then
+      echo -e "${RED}⚠️  Usage: brightside todo done <task number>${RESET}"
       exit 1
     fi
-    sed -i '' "$2d" "$TODO_FILE"
-    echo "✔ Task $2 marked as done!"
+
+    if ! sed -n "${2}p" "$TODO_FILE" | grep -q "\[ \]"; then
+      echo -e "${RED}⚠️  Task $2 is either already done or does not exist.${RESET}"
+      exit 1
+    fi
+
+    sed -i '' "${2}s/\[ \]/[x]/" "$TODO_FILE"
+    echo -e "${GREEN}✔ Task $2 marked as done!${RESET}"
     ;;
 
   clear)
     > "$TODO_FILE"
-    echo "🧹 Cleared all tasks!"
+    echo -e "${YELLOW}🧹 Cleared all tasks!${RESET}"
     ;;
 
   *)
-    echo "🛠️ Usage: brightside todo <command> [args]"
-    echo "Commands:"
-    echo "  add <task>  → Add a new task"
-    echo "  list        → Show all tasks"
-    echo "  done <num>  → Mark a task as done"
-    echo "  clear       → Remove all tasks"
+    echo -e "${BOLD}🛠️ Usage:${RESET} brightside todo <command> [args]"
+    echo "---------------------------------"
+    echo -e "${CYAN}Commands:${RESET}"
+    echo "  ${BOLD}add <task>${RESET}    → Add a new task"
+    echo "  ${BOLD}list${RESET}          → Show all tasks"
+    echo "  ${BOLD}done <num>${RESET}    → Mark a task as done"
+    echo "  ${BOLD}clear${RESET}         → Remove all tasks"
     ;;
 esac

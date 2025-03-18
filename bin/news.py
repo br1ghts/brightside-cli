@@ -1,15 +1,18 @@
 import sys
 import os
 import json
+import requests
+from bs4 import BeautifulSoup
 
-try:
-    import feedparser
-except ImportError:
-    print("❌ Missing dependency: feedparser")
-    print("💡 Try running: pipx install feedparser or pip install --user feedparser")
-    sys.exit(1)
+# 🎨 ANSI Colors for Styling
+COLOR_RED = "\033[91m"
+COLOR_GREEN = "\033[92m"
+COLOR_YELLOW = "\033[93m"
+COLOR_BLUE = "\033[94m"
+COLOR_CYAN = "\033[96m"
+COLOR_RESET = "\033[0m"
 
-# Dynamically find the config directory
+# 🔍 Find the config file
 CONFIG_FILE = os.path.join(os.path.dirname(__file__), "../config/news_sources.json")
 
 def load_sources():
@@ -18,8 +21,20 @@ def load_sources():
         with open(CONFIG_FILE, "r") as file:
             return json.load(file)
     except FileNotFoundError:
-        print("❌ Error: news_sources.json not found!")
+        print(f"{COLOR_RED}❌ Error: news_sources.json not found!{COLOR_RESET}")
         sys.exit(1)
+
+def fetch_rss_feed(url):
+    """ Fetch RSS feed using requests and parse it with BeautifulSoup """
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+    except requests.RequestException:
+        print(f"{COLOR_RED}⚠️ Failed to fetch {url}{COLOR_RESET}")
+        return None
+
+    soup = BeautifulSoup(response.content, "xml")
+    return soup
 
 def fetch_news(category):
     """ Fetch and display news from RSS feeds """
@@ -28,33 +43,40 @@ def fetch_news(category):
     if category == "all":
         categories = sources.keys()
     elif category not in sources:
-        print(f"❌ Unknown category: {category}")
-        print(f"Available categories: {', '.join(sources.keys())}")
+        print(f"{COLOR_RED}❌ Unknown category: {category}{COLOR_RESET}")
+        print(f"🔹 Available categories: {', '.join(sources.keys())}\n")
         sys.exit(1)
     else:
         categories = [category]
 
+    print(f"\n📡 {COLOR_CYAN}Fetching {category.upper()} news...{COLOR_RESET}\n")
+
     for cat in categories:
-        print(f"\n🔍 Fetching {cat.upper()} news...\n")
+        print(f"{COLOR_YELLOW}{'='*40}\n🔍 {cat.upper()} NEWS\n{'='*40}{COLOR_RESET}")
+
         for url in sources[cat]:
-            feed = feedparser.parse(url)
-            
-            # Handle missing fields safely
-            title = feed.feed.get("title", "Unknown Source")
-            link = feed.feed.get("link", url)
+            soup = fetch_rss_feed(url)
+            if not soup:
+                continue
 
-            print(f"📰 {title} ({link})")
+            # Extract feed title and link
+            title = soup.find("title").text if soup.find("title") else "Unknown Source"
+            link = url
+            print(f"\n📰 {COLOR_BLUE}{title}{COLOR_RESET} - {COLOR_CYAN}{link}{COLOR_RESET}")
 
-            for entry in feed.entries[:5]:  # Get top 5 articles per source
-                article_title = entry.get("title", "No title available")
-                article_link = entry.get("link", "No link available")
-                print(f"  - {article_title} ({article_link})")
+            # Extract top 5 articles
+            items = soup.find_all("item")[:5]
+            for item in items:
+                article_title = item.find("title").text if item.find("title") else "No title available"
+                article_link = item.find("link").text if item.find("link") else "No link available"
+                print(f"   {COLOR_GREEN}• {article_title}{COLOR_RESET}")
+                print(f"     {COLOR_CYAN}{article_link}{COLOR_RESET}")
 
-        print("\n" + "-" * 50)  # Divider for readability
+        print(f"\n{COLOR_YELLOW}{'-'*40}{COLOR_RESET}")  # Divider for readability
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("❌ Usage: brightside news <category|all>")
+        print(f"{COLOR_RED}❌ Usage: brightside news <category|all>{COLOR_RESET}\n")
         sys.exit(1)
 
     category = sys.argv[1]

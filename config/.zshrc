@@ -78,14 +78,6 @@ zstyle ':completion:*' menu select=2
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' '+l:|=* r:|=*'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
-# Homebrew (Mac & Linux)
-if command -v brew &> /dev/null; then
-    eval "$(brew shellenv)"
-else
-    echo "⚠️ Warning: Homebrew is not installed! Install it with:"
-    echo "   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-fi
-
 
 # Brightside CLI Path Setup
 export BRIGHTSIDE_ROOT="$HOME/brightside-cli"
@@ -105,3 +97,6 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 export BRIGHTSIDE_ROOT="$HOME/brightside-cli"
 export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
 
+export BRIGHTSIDE_ROOT="/home/dave/brightside-cli"
+export PATH="/home/dave/brightside-cli/bin:$PATH"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"

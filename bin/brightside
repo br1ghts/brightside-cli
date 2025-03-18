@@ -1,27 +1,48 @@
 #!/bin/bash
 
-if [[ $# -eq 0 || "$1" == "--help" ]]; then
+# Brightside CLI - Command Line Interface
+
+BRIGHTSIDE_VERSION="1.0.0"
+BRIGHTSIDE_COMMANDS=(
+    "ytmp3 <url>      - 🎵 Download YouTube as MP3"
+    "ytmp4 <url>      - 🎥 Download YouTube as MP4"
+    "whisper-sub <file> - 🎙️ Generate subtitles using Whisper AI"
+    "todo <task>      - ✅ Manage your To-Do List"
+    "news <category>  - 📰 Fetch latest news from RSS feeds"
+    "grab <url>       - 📥 Download any file from the internet"
+    "setup            - ⚙️  Re-run setup script"
+    "--help           - 📖 Show this help menu"
+    "--version        - 🔹 Show Brightside CLI version"
+)
+
+# 🚀 Display Help Menu
+show_help() {
     echo "🎛️ Brightside CLI - Available Commands:"
-    echo "  brightside ytmp3 <url>      # Download YouTube as MP3"
-    echo "  brightside ytmp4 <url>      # Download YouTube as MP4"
-    echo "  brightside whisper-sub <file>  # Generate subtitles"
-    echo "  brightside setup           # Re-run setup"
-    echo "  brightside --help          # Show this help menu"
+    for cmd in "${BRIGHTSIDE_COMMANDS[@]}"; do
+        echo "  brightside $cmd"
+    done
     exit 0
-fi
+}
 
+# 🔹 Display Version
 if [[ "$1" == "--version" ]]; then
-    echo "🔹 Brightside CLI v1.0.0"
+    echo "🔹 Brightside CLI v$BRIGHTSIDE_VERSION"
     exit 0
 fi
 
+# 📖 Display Help if No Args or '--help'
+if [[ $# -eq 0 || "$1" == "--help" ]]; then
+    show_help
+fi
+
+# ⚙️  Execute Commands
 case "$1" in
     ytmp3) shift; python3 "$BRIGHTSIDE_ROOT/bin/ytmp3.py" "$@" ;;
     ytmp4) shift; python3 "$BRIGHTSIDE_ROOT/bin/ytmp4.py" "$@" ;;
     whisper-sub) shift; python3 "$BRIGHTSIDE_ROOT/bin/whisper-sub.py" "$@" ;;
-    todo) shift; bash "$BRIGHTSIDE_ROOT/bin/todo" "$@" ;;  # <== ✅ Added todo command
+    todo) shift; bash "$BRIGHTSIDE_ROOT/bin/todo" "$@" ;;
     news) shift; python3 "$BRIGHTSIDE_ROOT/bin/news.py" "$@" ;;
-    grab) shift; bash "$BRIGHTSIDE_ROOT/bin/grab" "$@" ;;  # New grab command
+    grab) shift; bash "$BRIGHTSIDE_ROOT/bin/grab" "$@" ;;
     setup) shift; bash "$BRIGHTSIDE_ROOT/bin/setup.sh" "$@" ;;
     *)
         echo "❌ Unknown command: $1"
@@ -29,4 +50,3 @@ case "$1" in
         exit 1
         ;;
 esac
-
