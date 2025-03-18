@@ -64,8 +64,8 @@ fi
 
 # Ensure Oh My Zsh is installed
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "⚡ Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    echo "⚡ Installing Oh My Zsh (non-interactive)..."
+    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
 # Ensure Powerlevel10k is installed
