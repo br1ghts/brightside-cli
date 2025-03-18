@@ -29,6 +29,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 # Install Homebrew if missing
 if ! command -v brew &>/dev/null; then
     echo "🍺 Homebrew not found. Installing..."
+
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
     # Determine the correct Homebrew path
@@ -38,7 +39,7 @@ if ! command -v brew &>/dev/null; then
         BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
     fi
 
-    # Ensure brew is in PATH
+    # Ensure Homebrew is in PATH
     if [[ -f "$BREW_PATH" ]]; then
         echo "✅ Homebrew installed at $BREW_PATH"
         echo "eval \"\$($BREW_PATH shellenv)\"" >> "$HOME/.zshrc"
@@ -49,18 +50,28 @@ if ! command -v brew &>/dev/null; then
     fi
 else
     echo "✅ Homebrew is already installed."
-    eval "$(brew shellenv)"
 fi
 
-    # Ensure Homebrew is in PATH
-    if ! grep -q 'brew shellenv' "$HOME/.zshrc"; then
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zshrc"
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-    fi
+# Ensure Homebrew is in PATH for both macOS and Linux
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    HOMEBREW_PREFIX="/opt/homebrew"
+else
+    HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+fi
 
-    # Install dependencies
+# Ensure brew shellenv is sourced
+if ! grep -q "brew shellenv" "$HOME/.zshrc"; then
+    echo "eval \"\$($HOMEBREW_PREFIX/bin/brew shellenv)\"" >> "$HOME/.zshrc"
+    eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
+fi
+
+# **🔥 Install Dependencies (Correct for macOS & Linux)**
+if [[ "$OSTYPE" == "darwin"* ]]; then
     brew install git zsh pipx
     brew install --cask font-hack-nerd-font
+else
+    brew install git zsh pipx
+fi
 
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     echo "🐧 Linux detected. Checking dependencies..."
