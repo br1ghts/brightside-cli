@@ -86,6 +86,7 @@ else
     echo "   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
 fi
 
+
 # Brightside CLI Path Setup
 export BRIGHTSIDE_ROOT="$HOME/brightside-cli"
 export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
@@ -101,3 +102,6 @@ fi
 source $HOME/.oh-my-zsh/oh-my-zsh.sh
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export BRIGHTSIDE_ROOT="$HOME/brightside-cli"
+export PATH="$BRIGHTSIDE_ROOT/bin:$PATH"
+
